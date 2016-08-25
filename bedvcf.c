@@ -55,8 +55,8 @@ int Interval_read(Interval *self, FILE *fp) {
 	}
 
 	chr = strtok_r(buff, "\t", &ptr);
-	startToken = strtok_r(buff, "\t", &ptr);
-	endToken = strtok_r(buff, "\t", &ptr);
+	startToken = strtok_r(NULL, "\t", &ptr);
+	endToken = strtok_r(NULL, "\t", &ptr);
 
 	if(NULL == endToken) {
         fprintf(stderr,"%s:%s:%d: Bad line in bed file.\n",
@@ -76,6 +76,7 @@ int Interval_read(Interval *self, FILE *fp) {
     // here. 
     self->start = strtoul(startToken, NULL, 10);
     self->end = strtoul(endToken, NULL, 10);
+
     return 0;
 }
 
@@ -104,7 +105,7 @@ int main(int argc, char **argv) {
         fprintf(stderr,"Can't read initial interval from bed file.\n");
         exit(EXIT_FAILURE);
     }
-    Interval_print(&ivl, stdout);
+    //    Interval_print(&ivl, stdout);
 
     char buff[2048];
     char chr[CHRNAMESIZE];
@@ -153,10 +154,13 @@ int main(int argc, char **argv) {
         strncpy(postok, tab1, n);
         postok[n] = '\0';
 
-        strtoul(postok, NULL, 10);
+        pos = strtoul(postok, NULL, 10);
         if(pos==0) // in telomere
             continue;
         --pos;  // make vcf positions consistent with bed positions
+
+        //        fputs(buff, stdout);
+        //        printf("postok=\"%s\" pos=%lu\n", postok, pos);
 
         if(pos < ivl.start)
             // We're not yet at the start of interval, so read vcf.
@@ -168,7 +172,7 @@ int main(int argc, char **argv) {
             if(EOF == Interval_read(&ivl, bed)) {
                 goto done;
             }
-            Interval_print(&ivl, stdout);
+            //            Interval_print(&ivl, stdout);
             if(strcmp(ivl0.chr, ivl.chr) == 0 && ivl0.start > ivl.start) {
                 fprintf(stderr,"%s:%d: bed file isn't sorted.\n",
                         __FILE__, __LINE__);
