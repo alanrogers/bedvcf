@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <assert.h>
+#include <string.h>
 
 // chrom - The name of the chromosome (e.g. chr3, chrY, chr2_random)
 // or scaffold (e.g. scaffold10671).
@@ -23,4 +24,27 @@ struct Interval {
 	long undigned end;   // 1st position beyond end of interval
 };
 
+int Interval_read(Interval *ivl, FILE *fp) {
+	char buff[300], *chr, *startToken, *endToken, *ptr;
+
+	if(NULL == fgets(buff, sizeof buff, fp))
+		return EOF;
+	if(NULL == strchr(buff, '\n')) {
+		fprintf(stderr,"%s:%s:%d: buffer overflow.\n",
+				__FILE__,__func__,__LINE__);
+		exit(EXIT_FAILURE);
+	}
+
+	chr = strtok_r(buff, "\t", &ptr);
+	startToken = strtok_r(buff, "\t", &ptr);
+	endToken = strtok_r(buff, "\t", &ptr);
+
+	if(NULL == endToken)
+}
+
+int main(int argc, char **argv) {
+
+	
+	return 0;
+}
 
