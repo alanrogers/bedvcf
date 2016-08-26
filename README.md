@@ -6,8 +6,8 @@ usage: bedvcf in.bed < in.vcf > out.vcf
 This program reads a .vcf file on standard input and a .bed file
 specified in a command-line argument. The .bed file specifies a set of
 intervals, and the .vcf file describes variable sites in a set of DNA
-sequences. The program bedvcf filters the vcf file, printing only
-those intervals listed in the .bed file.
+sequences. The program filters the vcf file, printing only those
+intervals listed in the .bed file.
 
 On input, the chromosomes of both files must be sorted in dictionary
 order, and the nucleotide position must be sorted in numeric
