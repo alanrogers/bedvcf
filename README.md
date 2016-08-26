@@ -13,7 +13,7 @@ On input, the chromosomes of both files must be sorted in dictionary
 order, and the nucleotide position must be sorted in numeric
 order. For example, the bed file can be sorted by "sort -k1 -k2n".
 
-The same job can be done, using bcftools, like this:
+The .vcf file can also be filtered, using bcftools, like this:
 
     bcftools view --output-file out.vcf --output-type v --regions-file in.bed \
       in.vcf
