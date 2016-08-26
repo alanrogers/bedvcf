@@ -163,8 +163,8 @@ int main(int argc, char **argv) {
     //    Interval_print(&ivl, stdout);
 
     char        buff[2048];
-    char        chr[CHRNAMESIZE];
-    unsigned long pos;
+    char        chr[CHRNAMESIZE] = {'\0'}, chr0[CHRNAMESIZE];
+    unsigned long pos=0, pos0;
     int         chrdiff = -1;
     while(1) {
         if(NULL == fgets(buff, sizeof buff, stdin))
@@ -184,10 +184,26 @@ int main(int argc, char **argv) {
             continue;
         }
 
+        strcpy(chr0, chr);
+        pos0 = pos;
         // Parse buff to get chr and pos. Non-zero return
         // means we're in a telomere, so read another line.
         if(getChrPos(CHRNAMESIZE, chr, &pos, buff))
             continue;
+
+        // check sort of vcf file
+        chrdiff = strcmp(chr0, chr);
+        if(chrdiff > 0) {
+            fprintf(stderr, "%s:%d: vcf file isn't sorted.\n",
+                    __FILE__, __LINE__);
+            fprintf(stderr, "       chr \"%s\" precedes \"%s\"\n", chr0, chr);
+            exit(EXIT_FAILURE);
+        }else if(chrdiff == 0 && pos0 > pos) {
+            fprintf(stderr, "%s:%d: vcf file isn't sorted.\n",
+                    __FILE__, __LINE__);
+            fprintf(stderr, "       pos %lu precedes %lu\n", pos0, pos);
+            exit(EXIT_FAILURE);
+        }
 
         //        fputs(buff, stdout);
         //        printf("postok=\"%s\" pos=%lu\n", postok, pos);
@@ -200,23 +216,23 @@ int main(int argc, char **argv) {
         assert(chrdiff >= 0);
         while(chrdiff>0 || (chrdiff==0 && pos >= ivl.end)) {
             // We're beyond end of interval so read bed file.
-            Interval    prev = ivl;
+            Interval    ivl0 = ivl;
             if(EOF == Interval_read(&ivl, bed))
                 goto done;
 
             //            Interval_print(&ivl, stdout);
-            chrdiff = strcmp(prev.chr, ivl.chr);
+            chrdiff = strcmp(ivl0.chr, ivl.chr);
             if(chrdiff > 0) {
                 fprintf(stderr,
                         "%s:%d: chromosomes in bed file aren't sorted.\n",
                         __FILE__, __LINE__);
-                fprintf(stderr, "       %s precedes %s\n", prev.chr, ivl.chr);
+                fprintf(stderr, "       %s precedes %s\n", ivl0.chr, ivl.chr);
                 exit(EXIT_FAILURE);
-            } else if(chrdiff == 0 && prev.start > ivl.start) {
+            } else if(chrdiff == 0 && ivl0.start > ivl.start) {
                 fprintf(stderr, "%s:%d: positions in bed file aren't sorted.\n",
                         __FILE__, __LINE__);
                 fprintf(stderr, "       %lu precedes %lu\n",
-                        prev.start, ivl.start);
+                        ivl0.start, ivl.start);
                 exit(EXIT_FAILURE);
             }
             chrdiff = strcmp(chr, ivl.chr);
