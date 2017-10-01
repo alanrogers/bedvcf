@@ -162,7 +162,7 @@ int main(int argc, char **argv) {
     }
     //    Interval_print(&ivl, stdout);
 
-    char        buff[16384];
+    char        buff[4096];
     char        chr[CHRNAMESIZE] = {'\0'}, chr0[CHRNAMESIZE];
     unsigned long pos=0, pos0;
     int         chrdiff = -1;
