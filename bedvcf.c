@@ -172,6 +172,12 @@ int main(int argc, char **argv) {
         if(NULL == strchr(buff, '\n') && !feof(stdin)) {
             fprintf(stderr, "%s:%s:%d: buffer overflow.\n",
                     __FILE__, __func__, __LINE__);
+            fprintf(stderr,"Bad input line: ");
+            int i;
+            for(i=0; i < 60 && i < sizeof(buff); ++i)
+                putc(buff[i], stderr);
+            fputs("...\n", stderr);
+
             exit(EXIT_FAILURE);
         }
         // Header lines pass through unfiltered
